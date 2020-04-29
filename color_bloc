@@ -1,0 +1,33 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+
+enum ColorEvent { to_amber, to_light_blue }
+
+class ColorBloc {
+  Color _color = Colors.amber;
+
+  StreamController<ColorEvent> _eventcontroller =
+      StreamController<ColorEvent>();
+  StreamSink<ColorEvent> get eventSink => _eventcontroller.sink;
+  StreamController<Color> _statecontroller = StreamController<Color>();
+  StreamSink<Color> get _statesink => _statecontroller.sink;
+  Stream<Color> get stateStream => _statecontroller.stream;
+
+  void _mapEventToState(ColorEvent colorEvent) {
+    if (colorEvent == ColorEvent.to_amber)
+      _color = Colors.amber;
+    else
+      _color = Colors.lightBlue;
+
+    _statesink.add(_color);
+  }
+
+  ColorBloc() {
+    _eventcontroller.stream.listen(_mapEventToState);
+  }
+  void dispose() {
+    _eventcontroller.close();
+    _statecontroller.close();
+  }
+}
